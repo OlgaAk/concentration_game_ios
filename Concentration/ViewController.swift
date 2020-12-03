@@ -17,11 +17,23 @@ class ViewController: UIViewController {
     
     private(set) var flipCount : Int = 0 {
         didSet {
-            flipCountLable.text = game.gameWin ? "You WON!!" : "Count: \(flipCount)"
+            updateFlipCountLable()
         }
     }
     
-    @IBOutlet private weak var flipCountLable: UILabel!
+    func updateFlipCountLable() {
+        let attributes : [NSAttributedString.Key: Any] = [
+            .foregroundColor: UIColor.red
+        ]
+        let attributedString = NSAttributedString(string: "Count: \(flipCount)", attributes: attributes)
+        flipCountLable.attributedText = attributedString
+    }
+    
+    @IBOutlet private weak var flipCountLable: UILabel! {
+        didSet{
+            updateFlipCountLable()
+        }
+    }
     
     @IBOutlet private var cardButtons: [UIButton]!
     
@@ -49,15 +61,27 @@ class ViewController: UIViewController {
     
     private var emojiChoises : [String] = ["👻", "🎃", "🐭", "🐤", "🐝", "🦄", "🐌"]
     
-    private var emojiDictionary = [Int: String]()
+    private var emojiDictionary = [Card: String]()
     
     private func emoji(for card: Card) -> String {
-        if emojiDictionary[card.identifire] == nil, emojiChoises.count > 0 {
-            let randomIndex = Int(arc4random_uniform(UInt32(emojiChoises.count)))
-            emojiDictionary[card.identifire] = emojiChoises.remove(at: randomIndex )
+        if emojiDictionary[card] == nil, emojiChoises.count > 0 {
+            let randomIndex = emojiChoises.count.arc4random
+            emojiDictionary[card] = emojiChoises.remove(at: randomIndex )
         }
-        return emojiDictionary[card.identifire] ?? "?"
+        return emojiDictionary[card] ?? "?"
     }
+    
+}
 
+extension Int {
+    var arc4random : Int {
+        if self > 0 {
+            return Int(arc4random_uniform(UInt32(self)))
+        } else if self < 0 {
+            return -Int(arc4random_uniform(UInt32(abs(self))))
+        } else {
+            return 0
+        }
+    }
 }
 

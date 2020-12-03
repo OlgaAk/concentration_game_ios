@@ -7,10 +7,20 @@
 
 import Foundation
 
-struct Card {
+struct Card: Hashable, Equatable {
+
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(identifier)
+    }
+    
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        return lhs.identifier == rhs.identifier
+    }
+    
     var isFaceUp = false
     var isMatched = false
-    var identifire: Int
+    private var identifier: Int
     
     private static var idFactory = 0
     
@@ -20,6 +30,6 @@ struct Card {
     }
     
     init() {
-        self.identifire = Card.getUniqueId()
+        self.identifier = Card.getUniqueId()
     }
 }

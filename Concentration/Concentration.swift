@@ -7,22 +7,12 @@
 
 import Foundation
 
-class Concentration {
+struct Concentration {
     private(set) var cards = Array<Card>()
     
     private var indexOfOneAndOnlyOneFaceUp : Int? {
         get {
-            var foundIndex : Int?
-            for index in cards.indices{
-                if cards[index].isFaceUp {
-                    if foundIndex == nil {
-                        foundIndex = index
-                    } else {
-                        return nil
-                    }
-                }
-            }
-            return foundIndex
+            return cards.indices.filter {cards[$0].isFaceUp}.oneAndOnly
         }
         set {
             for index in cards.indices{
@@ -33,11 +23,11 @@ class Concentration {
     
     var gameWin = false
     
-    func chooseCard(at index: Int){
+    mutating func chooseCard(at index: Int){
         assert(cards.indices.contains(index), "Concentration.chooseCard(at \(index): chosen index not in cards")
         // if one card is already face up check if new card matches
         if indexOfOneAndOnlyOneFaceUp != nil {
-            if cards[index].identifire == cards[indexOfOneAndOnlyOneFaceUp!].identifire {
+            if cards[index] == cards[indexOfOneAndOnlyOneFaceUp!] {
                 cards[index].isMatched = true
                 cards[indexOfOneAndOnlyOneFaceUp!].isMatched = true
                 var countNotMatched = 0
@@ -59,9 +49,17 @@ class Concentration {
     
     
     init(numberOfCardPairs: Int) {
+        assert(numberOfCardPairs>0, "Concentration.init( \(numberOfCardPairs): you must have at least one pair of cards")
         for _ in 0..<numberOfCardPairs{
             let card = Card()
             cards += [card, card]
         }
+    }
+}
+
+
+extension Collection {
+    var oneAndOnly : Element? {
+        return count == 1 ? first : nil
     }
 }
